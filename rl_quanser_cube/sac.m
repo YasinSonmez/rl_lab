@@ -13,7 +13,7 @@
 % twister. For more information on controlling the seed used for random number 
 % generation, see <docid:matlab_ref#bsuymc2-1 |rng|>.
 
-previousRngState = rng(0,"twister");
+previousRngState = rng(42,"twister");
 %% 
 % The output |previousRngState| is a structure that contains information about 
 % the previous state of the stream. You will restore the state at the end of the 
@@ -40,16 +40,24 @@ previousRngState = rng(0,"twister");
 % 
 % Open the Simulink model.
 
-mdl = "rlQubeServo";
+mdl = "rlQubeServo_ours_angle";
 open_system(mdl)
+
+% Disable visualization and enable faster simulation modes
+set_param(mdl, 'SimulationMode', 'accelerator');
+set_param(mdl, 'SimMechanicsOpenEditorOnUpdate', 'off');
+% set_param(mdl, 'SimMechanicsExplorerVisibility', 'off');
+set_param(mdl, 'SaveOutput', 'off');
+set_param(mdl, 'SaveTime', 'off');
+set_param(mdl, 'FastRestart', 'on');
 %% 
 % Define the limit for $\theta$ (radians), $\dot{\theta \;}$(radians/second), 
 % voltage limit (volts), as well as the agent's sample time (seconds).
 
 theta_limit = 5*pi/8;
 dtheta_limit = 30;
-volt_limit = 12;
-Ts = 0.01;
+volt_limit = 10;
+Ts = 0.02;
 %% 
 % Define the initial conditions for $\theta$,$\dot{\theta}$,$\phi$,$\dot{\phi}$.
 
@@ -114,7 +122,7 @@ env.ResetFcn = @localResetFcn;
 % Create an agent initialization object to initialize the networks with 
 % the hidden layer size 256 for better representation learning.
 
-initOpts = rlAgentInitializationOptions(NumHiddenUnit=64);
+initOpts = rlAgentInitializationOptions(NumHiddenUnit=256);
 %% 
 % Specify the agent options for training using <docid:rl_ref#mw_372ffd1e-e1d2-453c-a691-cfef5da40ef8 
 % |rlSACAgentOptions|> and <docid:rl_ref#mw_18a712bb-b821-4dd9-a7ad-460ad7f2aa03 
@@ -137,7 +145,7 @@ agentOpts = rlSACAgentOptions( ...
     TargetSmoothFactor=0.005);
 
 agentOpts.ActorOptimizerOptions.Algorithm = "adam";
-agentOpts.ActorOptimizerOptions.LearnRate = 3e-4;
+agentOpts.ActorOptimizerOptions.LearnRate = 5e-4;
 agentOpts.ActorOptimizerOptions.GradientThreshold = 1;
 
 for i = 1:2
@@ -265,8 +273,8 @@ rng(previousRngState);
 % and the initial speeds to 0.
 
 function in = localResetFcn(in)
-theta0 = -pi/4+rand*pi/2;
-phi0 = pi-pi/4+rand*pi/2;
+theta0 = (2*rand-1)*pi/2;
+phi0 = pi+(2*rand-1)*pi/4;
 in = setVariable(in,"theta0",theta0);
 in = setVariable(in,"phi0",phi0);
 in = setVariable(in,"dtheta0",0);
