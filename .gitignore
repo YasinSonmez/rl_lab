@@ -1,0 +1,19 @@
+# MATLAB autosave and temporary files
+*.asv
+*.autosave
+*.slxc
+slprj/
+
+# Large trained model files
+*.mat
+!setup_info.mat
+!hw_step_response.mat
+
+# macOS
+.DS_Store
+
+# Build artifacts
+*.mexw64
+*.mexa64
+*.mexmaci64
+
