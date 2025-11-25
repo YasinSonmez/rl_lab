@@ -54,14 +54,14 @@ set_param(mdl, 'FastRestart', 'on');
 % Define the limit for $\theta$ (radians), $\dot{\theta \;}$(radians/second), 
 % voltage limit (volts), as well as the agent's sample time (seconds).
 
-theta_limit = 5*pi/8;
+theta_limit = pi/2;
 dtheta_limit = 30;
-volt_limit = 10;
-Ts = 0.02;
+volt_limit = 8;
+Ts = 0.01;
 %% 
 % Define the initial conditions for $\theta$,$\dot{\theta}$,$\phi$,$\dot{\phi}$.
 
-theta0 = 0;
+theta0 = pi;
 phi0 = 0;
 dtheta0 = 0;
 dphi0 = 0;
@@ -273,8 +273,8 @@ rng(previousRngState);
 % and the initial speeds to 0.
 
 function in = localResetFcn(in)
-theta0 = (2*rand-1)*pi/2;
-phi0 = pi+(2*rand-1)*pi/4;
+theta0 = (2*rand-1)*pi/8;
+phi0 = pi+(2*rand-1)*pi/8;
 in = setVariable(in,"theta0",theta0);
 in = setVariable(in,"phi0",phi0);
 in = setVariable(in,"dtheta0",0);
